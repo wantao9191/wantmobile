@@ -42,7 +42,6 @@ const Service = () => {
   ]);
   const [currentItem, setCurrentItem] = useState<any>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [isSpecialModalVisible, setIsSpecialModalVisible] = useState(false);
   const [showExitConfirm, setShowExitConfirm] = useState(false);
   const beforeRemove = () => {
     setShowExitConfirm(true);
@@ -81,7 +80,6 @@ const Service = () => {
       navigationEvents.off('serviceBackPress', handleBackPress);
     };
   }, []);
-  console.log(router)
   return (
     <View style={commonStyles.container}>
       <SafeAreaView style={commonStyles.safeArea} edges={['left', 'right']}>
@@ -200,30 +198,6 @@ const Service = () => {
                 console.log('前往签退')
                 setIsModalVisible(false);
                 router.replace('/care/signout');
-              },
-              style: 'primary',
-            },
-          ]}
-        />
-        <Modal
-          visible={isSpecialModalVisible}
-          onClose={() => setIsSpecialModalVisible(false)}
-          title="特情上报"
-          content="本次服务中有特殊情况吗，是否需要上报？"
-          buttons={[
-            {
-              text: '结束服务',
-              onPress: () => {
-                setIsSpecialModalVisible(false);
-                router.back();
-              },
-              style: 'secondary',
-            },
-            {
-              text: '上报',
-              onPress: () => {
-                setIsSpecialModalVisible(false);
-                // router.push('/care/service');
               },
               style: 'primary',
             },

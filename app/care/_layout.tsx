@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { router, Stack } from "expo-router";
-import { Text, TouchableOpacity } from "react-native";
+import { Platform, Text, TouchableOpacity } from "react-native";
 
 // 创建简单的事件管理器（兼容 Web 和 Native）
 class SimpleEventEmitter {
@@ -72,7 +72,7 @@ export default function RootLayout() {
         name="service"
         options={{
           title: '服务进行中',
-          presentation: 'transparentModal',
+          presentation: Platform.OS === 'ios' ? 'transparentModal' : 'card',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => navigationEvents.emit('serviceBackPress')}
