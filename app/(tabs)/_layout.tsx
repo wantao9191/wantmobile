@@ -1,35 +1,46 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
-
-import { HapticTab } from '@/components/haptic-tab';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
+import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from "expo-router";
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-      }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
-        }}
-      />
+    <Tabs screenOptions={{
+      headerTitleAlign: 'center',
+      headerStyle: {
+        backgroundColor: '#F1F5F9',
+        borderBottomWidth: 1,
+        borderBottomColor: '#CBD5E1',
+      },
+      headerTintColor: '#111827',
+      headerTitleStyle: {
+        fontWeight: '700',
+        fontSize: 17,
+      },
+      headerShadowVisible: false,
+      tabBarActiveTintColor: '#2563EB',
+      tabBarInactiveTintColor: '#94A3B8',
+      tabBarStyle: {
+        backgroundColor: '#FFFFFF',
+        borderTopColor: '#E5E7EB',
+        height: 60,
+        paddingTop: 6,
+        paddingBottom: 10,
+      },
+      tabBarLabelStyle: {
+        fontSize: 12,
+        marginTop: 0,
+        marginBottom: 2,
+      },
+      tabBarHideOnKeyboard: true,
+    }}>
+      <Tabs.Screen name='index' options={{
+        title: '服务首页', tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+        )
+      }}></Tabs.Screen>
+      <Tabs.Screen name="user" options={{
+        title: '我的', tabBarIcon: ({ color, focused }) => (
+          <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24} />
+        )
+      }}></Tabs.Screen>
     </Tabs>
-  );
+  )
 }
