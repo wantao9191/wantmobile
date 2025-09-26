@@ -48,3 +48,4 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- @signout.tsx 样式优化下，统一风格，优先使用公共模块样式，保持兼容性的情况下使用tailwindcss@commonStyles.ts 

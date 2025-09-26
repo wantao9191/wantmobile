@@ -95,7 +95,7 @@ export default function RootLayout() {
       />
       <Stack.Screen name="signout" options={{
         title: '签退',
-        presentation: 'transparentModal',
+        presentation: Platform.OS === 'ios' ? 'transparentModal' : 'card',
         headerLeft: () => null
       }} />
       {/* <Stack.Screen name="特情上报" options={{ title: '特情上报' }} />
