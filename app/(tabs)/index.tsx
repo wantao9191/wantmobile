@@ -1,6 +1,6 @@
 import { Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { NurseContainer } from "../components/tabs-index";
+import { NurseContainer } from "../../components/tabs-index";
 
 const Index = () => {
   return (

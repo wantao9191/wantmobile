@@ -3,3 +3,6 @@ export type { ConfirmModalProps, ModalButton, ModalProps } from './Modal';
 
 export { PhotoCapture, default as PhotoCaptureDefault } from './PhotoCapture';
 
+export { commonTimeFilters, TimeFilter } from './TimeFilter';
+export type { TimeFilterOption } from './TimeFilter';
+

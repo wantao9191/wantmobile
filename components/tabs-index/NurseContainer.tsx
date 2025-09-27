@@ -11,7 +11,7 @@ const NurseContainer = () => {
   const onServiceChange = () => {
     router.push('/care/exchange');
   }
-  return (<View className="p-4">
+  return (<View style={{ padding: 16 }}>
     <GreetingCard userName="刘丽娜" totalTasks={8} completedTasks={5} to={to} />
     {/* 今日服务计划标题 */}
     <View style={{ marginBottom: 16 }}>

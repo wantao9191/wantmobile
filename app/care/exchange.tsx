@@ -2,16 +2,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ServicePlanCard } from '../components/tabs-index';
+import { ServicePlanCard } from '../../components/tabs-index';
+import { TimeFilter } from '../../components/ui';
+
 import {
     colors,
     combineStyles,
     commonStyles,
     iconVariants
-} from '../styles/commonStyles';
+} from '../../styles/commonStyles';
 type Type = {
-    id: number;
-    name: string;
+    value: number;
+    label: string;
     reasons: string[];
     description: string;
 }
@@ -19,7 +21,7 @@ const Exchange = () => {
     const [type, setType] = useState(1);
     const [selectType, setSelectType] = useState<Type | null>(null);
     const [selectedReason, setSelectedReason] = useState<string>('');
-    
+
     // 获取不同类型的颜色主题
     const getDescriptionCardColor = (typeId: number) => {
         switch (typeId) {
@@ -45,14 +47,14 @@ const Exchange = () => {
             };
         }
     };
-    
-    const typeList: Type[] = [
-        { id: 1, name: '推迟', description: '推迟服务需要重新安排时间，建议提前与参保人确认新的服务时间', reasons: ['交通原因', '身体原因', '参保人要求', '天气原因', '其他原因'] },
-        { id: 2, name: '取消', description: '取消服务将无法恢复，请确认后再提交说明取消服务的具体情况', reasons: ['参保人住院', '参保人外出', '服务设备故障', '恶劣天气'] },
-        { id: 3, name: '请假', description: '请假申请提交后将由管理员审核，审核通过后会安排其他护理员接替', reasons: ['个人事假', '病假', '突发事件'] },
-    ]
+
+    const [typeList] = useState<Type[]>([
+        { value: 1, label: '推迟', description: '推迟服务需要重新安排时间，建议提前与参保人确认新的服务时间', reasons: ['交通原因', '身体原因', '参保人要求', '天气原因', '其他原因'] },
+        { value: 2, label: '取消', description: '取消服务将无法恢复，请确认后再提交说明取消服务的具体情况', reasons: ['参保人住院', '参保人外出', '服务设备故障', '恶劣天气'] },
+        { value: 3, label: '请假', description: '请假申请提交后将由管理员审核，审核通过后会安排其他护理员接替', reasons: ['个人事假', '病假', '突发事件'] },
+    ])
     useEffect(() => {
-        setSelectType(typeList.find(item => item.id === type) || null);
+        setSelectType(typeList.find(item => item.value === type) || null);
         setSelectedReason(''); // 重置选择的原因
     }, [type]);
     return (
@@ -79,21 +81,12 @@ const Exchange = () => {
                             </View>
                         </View>
                         <View style={styles.typeContainer}>
-                            {typeList.map(item => (
-                                <TouchableOpacity
-                                    key={item.id}
-                                    style={[
-                                        styles.typeButton,
-                                        type === item.id && styles.typeButtonSelected
-                                    ]}
-                                    onPress={() => setType(item.id)}
-                                >
-                                    <Text style={[
-                                        styles.typeButtonText,
-                                        type === item.id && styles.typeButtonTextSelected
-                                    ]}>{item.name}</Text>
-                                </TouchableOpacity>
-                            ))}
+                            <TimeFilter
+                                options={typeList}
+                                selectedValue={type}
+                                onSelect={(value) => setType(value as number)}
+                                containerStyle={styles.timeFilterContainer}
+                            />
                         </View>
                     </View>
                     {/* 类型说明 */}
@@ -101,13 +94,13 @@ const Exchange = () => {
                         <View style={[
                             styles.descriptionCard,
                             {
-                                backgroundColor: getDescriptionCardColor(selectType.id).backgroundColor,
-                                borderColor: getDescriptionCardColor(selectType.id).borderColor,
+                                backgroundColor: getDescriptionCardColor(selectType.value).backgroundColor,
+                                borderColor: getDescriptionCardColor(selectType.value).borderColor,
                             }
                         ]}>
                             <Text style={[
                                 styles.descriptionText,
-                                { color: getDescriptionCardColor(selectType.id).textColor }
+                                { color: getDescriptionCardColor(selectType.value).textColor }
                             ]}>{selectType.description}</Text>
                         </View>
                     )}
@@ -120,7 +113,7 @@ const Exchange = () => {
                                 </View>
                                 <View style={commonStyles.cardTitleContainer}>
                                     <Text style={commonStyles.cardTitle}>选择原因</Text>
-                                    <Text style={commonStyles.cardDescription}>{selectType.name}原因</Text>
+                                    <Text style={commonStyles.cardDescription}>{selectType.label}原因</Text>
                                 </View>
                             </View>
                             <View style={styles.reasonContainer}>
@@ -148,7 +141,7 @@ const Exchange = () => {
                         </View>
                     )}
                     {/* 时间选择（推迟服务时显示） */}
-                    {selectType?.id === 1 && (
+                    {selectType?.value === 1 && (
                         <View style={commonStyles.card}>
                             <View style={commonStyles.cardHeader}>
                                 <View style={combineStyles(commonStyles.iconContainer, iconVariants.success)}>
@@ -190,7 +183,7 @@ const Exchange = () => {
                         </View>
                         <TextInput
                             style={styles.textInput}
-                            placeholder={`请详细说明${selectType?.name || ''}服务的具体情况`}
+                            placeholder={`请详细说明${selectType?.label || ''}服务的具体情况`}
                             multiline
                             numberOfLines={4}
                             textAlignVertical="top"
@@ -210,7 +203,7 @@ const Exchange = () => {
                     >
                         <Ionicons name="checkmark" size={20} color="white" />
                         <Text style={commonStyles.primaryButtonText}>
-                            确认{selectType?.name || '变更'}
+                            确认{selectType?.label || '变更'}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -228,9 +221,11 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     typeContainer: {
+        width: '100%',
+    },
+    timeFilterContainer: {
+        width: '100%',
         flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 12,
     },
     typeButton: {
         backgroundColor: colors.background,
@@ -254,17 +249,17 @@ const styles = StyleSheet.create({
     typeButtonTextSelected: {
         color: colors.white,
     },
-     descriptionCard: {
-         borderWidth: 1,
-         borderRadius: 12,
-         padding: 16,
-         marginBottom: 16,
-     },
-     descriptionText: {
-         fontSize: 14,
-         lineHeight: 20,
-         fontWeight: '500',
-     },
+    descriptionCard: {
+        borderWidth: 1,
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 16,
+    },
+    descriptionText: {
+        fontSize: 14,
+        lineHeight: 20,
+        fontWeight: '500',
+    },
     reasonContainer: {
         gap: 12,
     },

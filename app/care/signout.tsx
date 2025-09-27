@@ -3,8 +3,8 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PhotoCapture } from "../components/ui";
-import { colors, commonStyles, textVariants } from "../styles/commonStyles";
+import { PhotoCapture } from "../../components/ui";
+import { colors, commonStyles, textVariants } from "../../styles/commonStyles";
 const SignOut = () => {
   const [isPhoto, setIsPhoto] = useState(false);
   return (

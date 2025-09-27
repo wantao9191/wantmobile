@@ -3,13 +3,13 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Modal, PhotoCapture } from '../components/ui';
+import { Modal, PhotoCapture } from '../../components/ui';
 import {
   colors,
   combineStyles,
   commonStyles,
   iconVariants
-} from '../styles/commonStyles';
+} from '../../styles/commonStyles';
 
 const Sign = () => {
   const [isScan, setIsScan] = useState(false);
