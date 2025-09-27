@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Platform, Text, TouchableOpacity, View } from 'react-native';
-import { InsuredGreetingCard, ServicePlanCard } from "../tabs-index";
+import InsuredGreetingCard from './InsuredGreetingCard';
+import ServicePlanCard from './ServicePlanCard';
 
 const InsuredContainer = () => {
   return (<View className="px-4 pt-2 pb-6">

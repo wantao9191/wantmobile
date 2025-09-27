@@ -11,6 +11,7 @@ export type ServicePlanCardProps = {
   items: string[]; // 项目标签
   onScan?: () => void;
   onDelayOrCancel?: () => void;
+  onServiceChange?: () => void;
 };
 
 export default function ServicePlanCard({
@@ -22,6 +23,7 @@ export default function ServicePlanCard({
   items,
   onScan,
   onDelayOrCancel,
+  onServiceChange,
 }: ServicePlanCardProps) {
   return (
     <View
@@ -75,10 +77,10 @@ export default function ServicePlanCard({
 
       <View style={{ flexDirection: 'row', gap: 12 }}>
         <TouchableOpacity onPress={onScan} style={{ flex: 1, backgroundColor: '#3B82F6', paddingVertical: 12, borderRadius: 8 }}>
-          <Text style={{ color: 'white', textAlign: 'center', fontWeight: '500' }}>扫码服务</Text>
+          <Text style={{ color: 'white', textAlign: 'center', fontWeight: '500' }}>开始服务</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={onDelayOrCancel} style={{ flex: 1, backgroundColor: '#F3F4F6', paddingVertical: 12, borderRadius: 8 }}>
-          <Text style={{ color: '#374151', textAlign: 'center', fontWeight: '500' }}>推迟/取消</Text>
+          <Text style={{ color: '#374151', textAlign: 'center', fontWeight: '500' }} onPress={onServiceChange}>服务变更</Text>
         </TouchableOpacity>
       </View>
     </View>

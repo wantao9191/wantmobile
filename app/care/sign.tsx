@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Modal } from '../components/ui/Modal';
+import { Modal, PhotoCapture } from '../components/ui';
 import {
   colors,
   combineStyles,
@@ -35,29 +35,17 @@ const Sign = () => {
               <Ionicons name="camera" size={20} color="white" />
               <Text style={commonStyles.primaryButtonText}>扫码签到</Text>
             </TouchableOpacity>
-          </View>) : (!isPhoto ? <View style={commonStyles.card}>
-            <View style={commonStyles.cardHeader}>
-              <View style={combineStyles(commonStyles.iconContainer, iconVariants.purple)}>
-                <Ionicons name="camera" size={24} color="#8B5CF6" />
-              </View>
-              <View style={commonStyles.cardTitleContainer}>
-                <Text style={commonStyles.cardTitle}>拍照打卡</Text>
-                <Text style={commonStyles.cardDescription}>拍照记录服务过程</Text>
-              </View>
-            </View>
-            <View style={styles.photoContainer}>
-              <TouchableOpacity style={styles.addPhotoButton} onPress={() => { setIsPhoto(true) }}>
-                <Ionicons name="add" size={24} color="#8B5CF6" />
-                <Text style={styles.addPhotoText}>拍照打卡</Text>
-              </TouchableOpacity>
-            </View>
-          </View> : <View style={styles.photoWrapper}>
-            <Image source={require('@/assets/images/android-icon-background.png')} style={styles.photo} />
-            <TouchableOpacity style={styles.retakeButton} onPress={() => { setIsPhoto(false) }}>
-              <Ionicons name="camera" size={16} color="white" />
-              <Text style={styles.retakeButtonText}>重新拍照</Text>
-            </TouchableOpacity>
-          </View>)}
+          </View>) : (
+          <PhotoCapture
+            hasPhoto={isPhoto}
+            onTakePhoto={() => setIsPhoto(true)}
+            onRetakePhoto={() => setIsPhoto(false)}
+            title="拍照打卡"
+            description="拍照记录服务过程"
+            takePhotoText="拍照打卡"
+            retakePhotoText="重新拍照"
+          />
+          )}
           {/* 位置信息卡片 */}
           <View style={commonStyles.card}>
             <View style={commonStyles.cardHeader}>
@@ -249,74 +237,6 @@ const styles = StyleSheet.create({
   serviceInfoValue: {
     fontSize: 14,
     color: '#111827',
-    fontWeight: '500',
-  },
-  photoWrapper: {
-    position: 'relative',
-    marginBottom: 16,
-  },
-  photo: {
-    width: 140,
-    height: 140,
-    borderRadius: 12,
-    backgroundColor: '#F3F4F6',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    alignSelf: 'center',
-    ...(Platform.OS === 'ios' ? {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-    } : {
-      elevation: 2,
-    }),
-  },
-  retakeButton: {
-    position: 'absolute',
-    bottom: 8,
-    right: '50%',
-    marginRight: -40,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 14,
-    gap: 4,
-    ...(Platform.OS === 'ios' ? {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.3,
-      shadowRadius: 2,
-    } : {
-      elevation: 3,
-    }),
-  },
-  retakeButtonText: {
-    color: 'white',
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  photoContainer: {
-    alignItems: 'center',
-  },
-  addPhotoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#8B5CF6',
-    borderStyle: 'dashed',
-    backgroundColor: '#F9FAFB',
-    gap: 8,
-  },
-  addPhotoText: {
-    fontSize: 16,
-    color: '#8B5CF6',
     fontWeight: '500',
   },
   bottomButtonContainer: {

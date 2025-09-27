@@ -98,9 +98,9 @@ export default function RootLayout() {
         presentation: Platform.OS === 'ios' ? 'transparentModal' : 'card',
         headerLeft: () => null
       }} />
-      {/* <Stack.Screen name="特情上报" options={{ title: '特情上报' }} />
-      <Stack.Screen name="打卡" options={{ title: '打卡' }} />
-      <Stack.Screen name="绑定设备" options={{ title: '绑定设备' }} />
+      <Stack.Screen name="specials" options={{ title: '特情上报' }} />
+      <Stack.Screen name="exchange" options={{ title: '服务变更' }} />
+      {/* <Stack.Screen name="绑定设备" options={{ title: '绑定设备' }} />
       <Stack.Screen name="评价" options={{ title: '评价' }} /> */}
     </Stack>
   )
