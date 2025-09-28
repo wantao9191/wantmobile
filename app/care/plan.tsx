@@ -2,12 +2,12 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ServicePlanCard } from '../components/tabs-index';
+import { ServicePlanCard } from '../../components/tabs-index';
 import {
   colors,
   combineStyles,
   commonStyles
-} from '../styles/commonStyles';
+} from '../../styles/commonStyles';
 
 const Plan = () => {
   const [selectedFilter, setSelectedFilter] = useState('全部');

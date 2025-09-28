@@ -17,6 +17,7 @@ export default function RootLayout() {
       },
       headerShadowVisible: false,
     }}>
+      <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false, title: '' }} />
       <Stack.Screen name="care" options={{
         headerShown: false,

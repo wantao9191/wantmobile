@@ -1,14 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { TimeFilter, commonTimeFilters } from '../../components/ui';
 import {
   commonStyles,
   createShadow
-} from '../styles/commonStyles';
+} from '../../styles/commonStyles';
 
 export default function User() {
+  const [selectedTimeFilter, setSelectedTimeFilter] = useState<string | number>('total');
   return (
     <View className="flex-1" style={commonStyles.container}>
       <SafeAreaView
@@ -76,17 +78,11 @@ export default function User() {
 
             {/* 服务统计卡片 */}
             <View style={commonStyles.statsCard}>
-              <View style={styles.timeFilterContainer}>
-                <TouchableOpacity style={[styles.timeFilterButton, styles.timeFilterActive]}>
-                  <Text style={[styles.timeFilterText, styles.timeFilterTextActive]}>总计</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.timeFilterButton}>
-                  <Text style={styles.timeFilterText}>本月</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.timeFilterButton}>
-                  <Text style={styles.timeFilterText}>本周</Text>
-                </TouchableOpacity>
-              </View>
+              <TimeFilter
+                options={commonTimeFilters.basic}
+                selectedValue={selectedTimeFilter}
+                onSelect={(value) => setSelectedTimeFilter(value as string | number)}
+              />
               <View style={styles.statsGrid}>
                 <View style={styles.statItem}>
                   <View style={styles.statIconContainer}>
@@ -380,40 +376,6 @@ const styles = StyleSheet.create({
     } : {
       elevation: 4,
     }),
-  },
-  timeFilterContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 8,
-    padding: 4,
-    marginBottom: 20,
-  },
-  timeFilterButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    alignItems: 'center',
-  },
-  timeFilterActive: {
-    backgroundColor: 'white',
-    ...(Platform.OS === 'ios' ? {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-    } : {
-      elevation: 2,
-    }),
-  },
-  timeFilterText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6B7280',
-  },
-  timeFilterTextActive: {
-    color: '#3B82F6',
-    fontWeight: '600',
   },
   statsGrid: {
     flexDirection: 'row',

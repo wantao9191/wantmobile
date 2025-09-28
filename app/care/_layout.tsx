@@ -95,12 +95,31 @@ export default function RootLayout() {
       />
       <Stack.Screen name="signout" options={{
         title: '签退',
-        presentation: 'transparentModal',
+        presentation: Platform.OS === 'ios' ? 'transparentModal' : 'card',
         headerLeft: () => null
       }} />
-      {/* <Stack.Screen name="特情上报" options={{ title: '特情上报' }} />
-      <Stack.Screen name="打卡" options={{ title: '打卡' }} />
-      <Stack.Screen name="绑定设备" options={{ title: '绑定设备' }} />
+      <Stack.Screen name="specials" options={{ title: '特情上报' }} />
+      <Stack.Screen name="exchange" options={{
+        title: '服务变更', headerLeft: () => (
+          <TouchableOpacity
+            onPress={() => navigationEvents.emit('serviceBackPress')}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              marginLeft: -8
+            }}
+          >
+            <Ionicons name="chevron-back" size={24} color="#007AFF" />
+            <Text style={{
+              fontSize: 14,
+              marginLeft: -2
+            }}>服务首页</Text>
+          </TouchableOpacity>
+        )
+      }} />
+      {/* <Stack.Screen name="绑定设备" options={{ title: '绑定设备' }} />
       <Stack.Screen name="评价" options={{ title: '评价' }} /> */}
     </Stack>
   )
