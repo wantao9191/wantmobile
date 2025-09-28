@@ -67,10 +67,11 @@ export default function RootLayout() {
           </TouchableOpacity>
         )
       }} />
-      <Stack.Screen name="sign" options={{ title: '签到打卡' }} />
+      <Stack.Screen name="sign" options={{ headerShown: true, title: '签到打卡' }} />
       <Stack.Screen
         name="service"
         options={{
+          headerShown: true,
           title: '服务进行中',
           presentation: Platform.OS === 'ios' ? 'transparentModal' : 'card',
           headerLeft: () => (
@@ -94,12 +95,14 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen name="signout" options={{
+        headerShown: true,
         title: '签退',
         presentation: Platform.OS === 'ios' ? 'transparentModal' : 'card',
         headerLeft: () => null
       }} />
-      <Stack.Screen name="specials" options={{ title: '特情上报' }} />
+      <Stack.Screen name="specials" options={{ headerShown: true, title: '特情上报' }} />
       <Stack.Screen name="exchange" options={{
+        headerShown: true,
         title: '服务变更', headerLeft: () => (
           <TouchableOpacity
             onPress={() => navigationEvents.emit('serviceBackPress')}

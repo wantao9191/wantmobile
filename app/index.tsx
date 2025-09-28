@@ -14,9 +14,9 @@ const SplashScreen: React.FC = () => {
   const [isMounted, setIsMounted] = useState(true);
 
   useEffect(() => {
-    // 启动动画序列
+    // 简化的启动动画序列
     const startAnimations = () => {
-      // Logo缩放入场动画
+      // 只保留核心Logo动画
       Animated.spring(scaleAnim, {
         toValue: 1,
         tension: 100,
@@ -24,50 +24,23 @@ const SplashScreen: React.FC = () => {
         useNativeDriver: true,
       }).start();
 
-      // 脉冲动画
+      // 简化的脉冲动画（减少循环次数）
       Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
-            toValue: 1.2,
-            duration: 1000,
+            toValue: 1.1, // 减少缩放幅度
+            duration: 800, // 减少持续时间
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
           Animated.timing(pulseAnim, {
             toValue: 1,
-            duration: 1000,
+            duration: 800,
             easing: Easing.inOut(Easing.ease),
             useNativeDriver: true,
           }),
-        ])
-      ).start();
-
-      // 弹跳动画
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(bounceAnim, {
-            toValue: -10,
-            duration: 1500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-          Animated.timing(bounceAnim, {
-            toValue: 0,
-            duration: 1500,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-
-      // 旋转动画
-      Animated.loop(
-        Animated.timing(rotateAnim, {
-          toValue: 1,
-          duration: 4000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        })
+        ]),
+        { iterations: 3 } // 限制循环次数
       ).start();
     };
 
@@ -94,18 +67,18 @@ const SplashScreen: React.FC = () => {
                 }
               });
             }
-          }, 3000);
+          }, 1000);
           return 100;
         }
         return prev + 5; // 更快的进度增长
       });
-    }, 1000); // 更短的间隔
+    }, 30); // 更短的间隔
 
     return () => {
       clearInterval(timer);
       setIsMounted(false);
     };
-  }, [router, fadeAnim, pulseAnim, bounceAnim, rotateAnim, scaleAnim, isMounted]);
+  }, [router, fadeAnim, pulseAnim, scaleAnim, isMounted]);
 
   const getLoadingText = () => {
     if (progress < 30) return "初始化应用...";
