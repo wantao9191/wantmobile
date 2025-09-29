@@ -1,8 +1,10 @@
+import React from "react";
 import { Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { NurseContainer } from "../../components/tabs-index";
-
-const Index = () => {
+import { InsuredContainer, NurseContainer } from "../../components/tabs-index";
+import { useAuth } from "../../contexts/AuthContext";
+const Index: React.FC = () => {
+  const { state } = useAuth();
   return (
     <View className="flex-1" style={{ backgroundColor: '#F8FAFC' }}>
       <SafeAreaView
@@ -24,8 +26,8 @@ const Index = () => {
           automaticallyAdjustContentInsets={false}
           contentInsetAdjustmentBehavior="never"
         >
-          {/* <InsuredContainer></InsuredContainer> */}
-          <NurseContainer></NurseContainer>
+          {state.role === 'insured' && <InsuredContainer></InsuredContainer>}
+          {state.role === 'nurse' && <NurseContainer userData={state.user} userPlan={state.userPlan}></NurseContainer>}
         </ScrollView>
       </SafeAreaView>
     </View>

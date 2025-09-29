@@ -1,13 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from "expo-router";
-import AuthGuard from '../../components/AuthGuard';
-import { useAuth } from '../../contexts/AuthContext';
 
 export default function TabLayout() {
-  const { state } = useAuth();
-
   return (
-    <AuthGuard requireAuth={true} allowedRoles={['nurse', 'insured']}>
       <Tabs screenOptions={{
         headerTitleAlign: 'center',
         headerStyle: {
@@ -48,6 +43,5 @@ export default function TabLayout() {
           )
         }}></Tabs.Screen>
       </Tabs>
-    </AuthGuard>
   )
 }

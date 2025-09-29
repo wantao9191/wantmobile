@@ -1,16 +1,17 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export type GreetingCardProps = {
   userName: string;
-  totalTasks: number;
-  completedTasks: number;
   to: () => void;
+  userPlan: any;
 };
 
-export default function GreetingCard({ userName, totalTasks, completedTasks, to }: GreetingCardProps) {
+export default function GreetingCard({ userName, to, userPlan }: GreetingCardProps) {
+  const totalTasks = useMemo(() => userPlan?.length, [userPlan]);
+  const completedTasks = useMemo(() => userPlan?.filter((plan: any) => plan.status === '已开始').length, [userPlan]);
   return (
     <LinearGradient
       colors={['#3B82F6', '#2563EB']}
@@ -20,7 +21,7 @@ export default function GreetingCard({ userName, totalTasks, completedTasks, to 
     >
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.greeting}>{`早上好，${userName}`}</Text>
+          <Text style={styles.greeting}>{`您好，${userName}`}</Text>
           <Text style={styles.subtitle}>
             今日有{totalTasks - completedTasks}个服务计划待完成
           </Text>

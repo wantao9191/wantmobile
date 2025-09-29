@@ -24,15 +24,11 @@ const Login = () => {
   const { login, state } = useAuth();
   const router = useRouter();
 
-  // 检查是否已登录，如果已登录则跳转到主页面
+  // 登录成功后自动跳转
   useEffect(() => {
-    if (state.isAuthenticated && !state.isLoading) {
-      // 根据用户角色跳转到对应页面
-      if (state.user?.role === 'nurse') {
-        router.replace('/(tabs)');
-      } else if (state.user?.role === 'insured') {
-        router.replace('/(tabs)');
-      }
+    console.log('------------------');
+    if (state.isAuthenticated && !state.isLoading && state.user) {
+      router.replace('/(tabs)');
     }
   }, [state.isAuthenticated, state.isLoading, state.user, router]);
 
@@ -48,10 +44,12 @@ const Login = () => {
 
       if (result.success) {
         // 登录成功，AuthContext会处理状态更新和跳转
+        
         Alert.alert('成功', '登录成功');
       } else {
         Alert.alert('登录失败', result.message || '登录失败，请稍后重试');
       }
+      console.log('登录-------', result);
     } catch (error: any) {
       console.error('登录错误:', error);
       Alert.alert('错误', error.message || '登录失败，请检查网络连接');

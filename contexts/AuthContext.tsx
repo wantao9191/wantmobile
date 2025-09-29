@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
+import { http } from '../utils/http';
 import { MobileTokenManager } from '../utils/http/token-manager';
-
 export interface User {
   id: string;
   account: string;
@@ -23,6 +23,7 @@ export interface AuthState {
   user: User | null;
   tokens: AuthTokens;
   role: 'nurse' | 'insured' | null;
+  userPlan: any | null;
 }
 
 type AuthAction =
@@ -30,7 +31,8 @@ type AuthAction =
   | { type: 'LOGIN_SUCCESS'; payload: { user: User; tokens: AuthTokens } }
   | { type: 'LOGOUT' }
   | { type: 'UPDATE_USER'; payload: User }
-  | { type: 'REFRESH_TOKENS'; payload: AuthTokens };
+  | { type: 'REFRESH_TOKENS'; payload: AuthTokens }
+  | { type: 'UPDATE_USER_PLAN'; payload: any };
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -41,6 +43,7 @@ const initialState: AuthState = {
     refreshToken: null,
   },
   role: null,
+  userPlan: null,
 };
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
@@ -55,7 +58,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         user: action.payload.user,
         tokens: action.payload.tokens,
-        role: action.payload.user.role,
+        role: action.payload.user.type,
       };
 
     case 'LOGOUT':
@@ -66,6 +69,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         user: null,
         tokens: { accessToken: null, refreshToken: null },
         role: null,
+        userPlan: null,
       };
 
     case 'UPDATE_USER':
@@ -80,6 +84,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         tokens: action.payload,
       };
 
+    case 'UPDATE_USER_PLAN':
+      return {
+        ...state,
+        userPlan: action.payload,
+      };
+
     default:
       return state;
   }
@@ -91,6 +101,7 @@ interface AuthContextType {
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   updateUser: (user: User) => void;
+  getUserPlan: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -105,15 +116,13 @@ export const useAuth = (): AuthContextType => {
 
 interface AuthProviderProps {
   children: ReactNode;
-  baseURL?: string;
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({
   children,
-  baseURL = '/api'
 }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
-  const tokenManager = new MobileTokenManager();
+  const tokenManager = React.useMemo(() => new MobileTokenManager(), []);
 
   // 恢复认证状态
   useEffect(() => {
@@ -128,10 +137,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
         if (loginStatus === 'logged_in' && userInfo) {
           const user = JSON.parse(userInfo);
 
-          // 验证token有效性
-          const tokenStatus = await tokenManager.checkLoginStatus(baseURL);
+          // 验证token有效性  
+          const tokenStatus = await tokenManager.checkLoginStatus(http.getBaseURL());
 
           if (tokenStatus.isLoggedIn) {
+
             dispatch({
               type: 'LOGIN_SUCCESS',
               payload: {
@@ -142,6 +152,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
                 },
               },
             });
+            getUserPlan();
             return;
           }
         }
@@ -159,40 +170,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     };
 
     restoreAuth();
-  }, [baseURL]);
+  }, []); // 空依赖数组，确保只运行一次
 
   // 登录函数
   const login = async (
-    account: string,
+    username: string,
     password: string,
     rememberMe: boolean = true
   ): Promise<{ success: boolean; message?: string }> => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+      // 调用登录API  
+      const response = await http.post(`/api/mobile/auth/login`, { username, password });
+      const data = response.data;
 
-      // 调用登录API
-      const response = await fetch(`${baseURL}/admin/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ account, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || data.code !== 200) {
+      if (!response.success || response.code !== 200) {
         return {
           success: false,
           message: data.message || '登录失败，请检查账号密码',
         };
       }
 
-      const { user, accessToken, refreshToken } = data.data;
+      const { userInfo, accessToken, refreshToken } = data;
 
       // 保存tokens到SecureStore
       await tokenManager.setTokens({ accessToken, refreshToken });
-
+      console.log('保存tokens到SecureStore', { accessToken, refreshToken });
       // 保存用户信息到AsyncStorage
-      await AsyncStorage.setItem('user_info', JSON.stringify(user));
+      await AsyncStorage.setItem('user_info', JSON.stringify(userInfo));
       await AsyncStorage.setItem('login_status', 'logged_in');
       await AsyncStorage.setItem('last_login_time', Date.now().toString());
 
@@ -200,7 +205,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: {
-          user,
+          user: userInfo,
           tokens: { accessToken, refreshToken },
         },
       });
@@ -224,12 +229,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
 
       // 清除服务器端的登录状态（可选）
       try {
-        await fetch(`${baseURL}/admin/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${state.tokens.accessToken}`,
-          },
-        });
+        await http.post('/admin/auth/logout', {});
       } catch (error) {
         console.warn('服务器登出失败:', error);
       }
@@ -252,17 +252,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
   // 刷新用户信息
   const refreshUser = async (): Promise<void> => {
     try {
-      const response = await fetch(`${baseURL}/admin/user/info`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${state.tokens.accessToken}`,
-        },
-      });
+      const response = await http.get('/admin/user/info');
 
-      const data = await response.json();
-
-      if (response.ok && data.code === 200) {
-        const updatedUser = data.data;
+      if (response.success && response.data.code === 200) {
+        const updatedUser = response.data.data;
         await AsyncStorage.setItem('user_info', JSON.stringify(updatedUser));
         dispatch({ type: 'UPDATE_USER', payload: updatedUser });
       }
@@ -277,12 +270,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({
     AsyncStorage.setItem('user_info', JSON.stringify(user));
   };
 
+  // 获取用户计划
+  const getUserPlan = async (): Promise<void> => {
+    try {
+      const response = await http.get('/api/mobile/plan/user');
+      console.log(response.data,'-----response');
+      if (response.success && response.code === 200) {
+        const userPlan = response.data;
+        dispatch({ type: 'UPDATE_USER_PLAN', payload: userPlan });
+      }
+    } catch (error) {
+      console.warn('获取用户计划失败:', error);
+    }
+  };
   const contextValue: AuthContextType = {
     state,
     login,
     logout,
     refreshUser,
     updateUser,
+    getUserPlan,
   };
 
   return (

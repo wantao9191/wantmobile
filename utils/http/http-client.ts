@@ -1,7 +1,7 @@
+import constants from 'expo-constants';
 import { HttpErrorHandler } from './http-error-handler';
 import { ApiResponse, ResponseHandler } from './response-handler';
 import { MobileTokenManager } from './token-manager';
-
 export interface RequestConfig {
   baseURL?: string;
   timeout?: number;
@@ -24,8 +24,9 @@ export class MobileHttpClient {
   private responseHandler: ResponseHandler;
 
   constructor(config: RequestConfig = {}) {
+    console.log(constants.expoConfig?.extra?.apiUrl,'-----');
     this.config = {
-      baseURL: config.baseURL || '/api',
+      baseURL: constants.expoConfig?.extra?.apiUrl || 'http://192.168.10.136:3000',
       timeout: config.timeout || 20000,
       headers: {
         'Content-Type': 'application/json',
@@ -111,6 +112,11 @@ export class MobileHttpClient {
 
   async clearToken(): Promise<void> {
     await this.tokenManager.clearToken();
+  }
+
+  // 获取基础URL
+  getBaseURL(): string {
+    return this.baseURL;
   }
 
   // Main request method

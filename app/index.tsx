@@ -2,8 +2,10 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
 import CareServiceLogo from '../components/ui/CareServiceLogo';
+import { useAuth } from '../contexts/AuthContext';
 
 const SplashScreen: React.FC = () => {
+  const { state } = useAuth();
   const router = useRouter();
   const [progress, setProgress] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(1));
@@ -12,8 +14,9 @@ const SplashScreen: React.FC = () => {
   const [rotateAnim] = useState(new Animated.Value(0));
   const [scaleAnim] = useState(new Animated.Value(0.8));
   const [isMounted, setIsMounted] = useState(true);
-
+  const [finished, setFinished] = useState(false);
   useEffect(() => {
+
     // 简化的启动动画序列
     const startAnimations = () => {
       // 只保留核心Logo动画
@@ -47,7 +50,7 @@ const SplashScreen: React.FC = () => {
     startAnimations();
 
     let timer: ReturnType<typeof setInterval>;
-    
+
     // 模拟应用加载过程 - 更快的加载速度用于演示
     timer = setInterval(() => {
       setProgress(prev => {
@@ -62,8 +65,8 @@ const SplashScreen: React.FC = () => {
                 useNativeDriver: true,
               }).start((finished) => {
                 if (finished && isMounted) {
-                  // 导航到主标签页
-                  router.replace('/login');
+                  // 动画完成，设置完成状态
+                  setFinished(true);
                 }
               });
             }
@@ -79,6 +82,16 @@ const SplashScreen: React.FC = () => {
       setIsMounted(false);
     };
   }, [router, fadeAnim, pulseAnim, scaleAnim, isMounted]);
+
+  useEffect(() => {
+    if (finished) {
+      if (state.isAuthenticated && !state.isLoading && state.user && state.userPlan) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/login');
+      }
+    }
+  }, [state.isAuthenticated, state.isLoading, state.user,state.userPlan, finished]);
 
   const getLoadingText = () => {
     if (progress < 30) return "初始化应用...";
@@ -97,18 +110,18 @@ const SplashScreen: React.FC = () => {
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       {/* 动态背景装饰圆形 */}
       <Animated.View style={[
-        styles.decorativeCircle1, 
+        styles.decorativeCircle1,
         { transform: [{ scale: pulseAnim }] }
       ]} />
       <Animated.View style={[
-        styles.decorativeCircle2, 
+        styles.decorativeCircle2,
         { transform: [{ translateY: bounceAnim }, { rotate: spin }] }
       ]} />
       <Animated.View style={[
-        styles.decorativeCircle3, 
+        styles.decorativeCircle3,
         { transform: [{ scale: pulseAnim }] }
       ]} />
-      
+
       {/* 额外的装饰元素 */}
       <Animated.View style={[
         styles.decorativeCircle4,
@@ -135,7 +148,7 @@ const SplashScreen: React.FC = () => {
             styles.logoHalo2,
             { transform: [{ scale: scaleAnim }] }
           ]} />
-          
+
           <Animated.View style={[
             styles.logoBackground,
             { transform: [{ scale: scaleAnim }] }
@@ -148,7 +161,7 @@ const SplashScreen: React.FC = () => {
         <View style={styles.brandContainer}>
           <Text style={styles.title}>护理服务平台</Text>
           <Text style={styles.subtitle}>专业护理，贴心服务</Text>
-          
+
           {/* 动画加载指示点 */}
           <View style={styles.dotsContainer}>
             <Animated.View style={[
@@ -170,10 +183,10 @@ const SplashScreen: React.FC = () => {
         {/* 加载进度条 */}
         <View style={styles.progressContainer}>
           <View style={styles.progressBar}>
-            <Animated.View 
+            <Animated.View
               style={[
-                styles.progressFill, 
-                { 
+                styles.progressFill,
+                {
                   width: `${progress}%`,
                   shadowOpacity: progress / 100
                 }
@@ -181,7 +194,7 @@ const SplashScreen: React.FC = () => {
             />
           </View>
         </View>
-        
+
         {/* 加载文字 */}
         <Text style={styles.loadingText}>{getLoadingText()}</Text>
       </View>

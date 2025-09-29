@@ -68,7 +68,7 @@ export default function ServicePlanCard({
       </View>
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
-        {items.map((item) => (
+        {items?.map((item) => (
           <View key={item} style={{ backgroundColor: '#F3F4F6', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6 }}>
             <Text style={{ fontSize: 12, color: '#374151' }}>{item}</Text>
           </View>

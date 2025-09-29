@@ -4,7 +4,7 @@ import "../global.css";
 
 export default function RootLayout() {
   return (
-    <AuthProvider baseURL="/api">
+    <AuthProvider>
       <Stack screenOptions={{
         headerShown: false,
         headerTitleAlign: 'center',
